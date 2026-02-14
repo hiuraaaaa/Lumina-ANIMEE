@@ -5,7 +5,7 @@
 /* Global Styles */
 @layer base {
   * {
-    @apply border-border;
+    @apply border-gray-700;
   }
   
   body {
@@ -182,4 +182,4 @@
 
 .badge-info {
   @apply bg-blue-500/20 text-blue-300 border border-blue-500/30;
-  }
+}
