@@ -2,9 +2,45 @@ import React from 'react';
 import { Play, CheckCircle } from 'lucide-react';
 
 const AnimeCard = ({ anime, onClick }) => {
+  // Extract anime slug from episode title
+  const getAnimeSlug = () => {
+    // If slug is valid anime slug (not generic "anime"), use it
+    if (anime.slug && anime.slug !== 'anime' && !anime.slug.includes('episode')) {
+      return anime.slug;
+    }
+    
+    // Extract anime name from title
+    // Example: "One Piece Episode 1155 Subtitle Indonesia" -> "one-piece"
+    const title = anime.title.toLowerCase();
+    
+    // Remove common patterns
+    const cleanTitle = title
+      .replace(/\s+episode\s+\d+.*$/i, '') // Remove "Episode 123..."
+      .replace(/\s+subtitle\s+indonesia.*$/i, '') // Remove "Subtitle Indonesia"
+      .replace(/\s+–\s+tamat.*$/i, '') // Remove "– TAMAT"
+      .replace(/\s+\[end\].*$/i, '') // Remove "[END]"
+      .replace(/\s+s\d+.*$/i, '') // Remove "S2", "S3", etc
+      .trim();
+    
+    // Convert to slug format
+    const slug = cleanTitle
+      .replace(/[^\w\s-]/g, '') // Remove special chars
+      .replace(/\s+/g, '-') // Replace spaces with -
+      .replace(/-+/g, '-') // Replace multiple - with single -
+      .toLowerCase();
+    
+    return slug;
+  };
+
+  const handleClick = () => {
+    const animeSlug = getAnimeSlug();
+    console.log('Navigating to anime:', animeSlug); // Debug
+    onClick(animeSlug);
+  };
+
   return (
     <div
-      onClick={onClick}
+      onClick={handleClick}
       className="group relative bg-gray-900/50 rounded-xl overflow-hidden cursor-pointer card-glow border border-white/5 hover:border-primary-500/30 transition-all duration-300"
     >
       {/* Poster Image */}
