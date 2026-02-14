@@ -12,24 +12,70 @@ const DetailPage = ({ slug, onBack, onWatch }) => {
   const [searchEpisode, setSearchEpisode] = useState('');
 
   useEffect(() => {
-    fetchDetail();
+    if (slug) {
+      console.log('DetailPage - Fetching slug:', slug); // Debug
+      fetchDetail();
+    } else {
+      setError('Invalid anime slug');
+      setLoading(false);
+    }
   }, [slug]);
 
   const fetchDetail = async () => {
     setLoading(true);
     setError(null);
+    
     try {
       const data = await apiService.getAnimeDetail(slug);
-      setDetail(data.detail);
+      console.log('DetailPage - API Response:', data); // Debug
+      
+      if (data && data.detail) {
+        setDetail(data.detail);
+      } else {
+        setError('Anime not found. The anime might not exist or the slug is incorrect.');
+      }
     } catch (err) {
-      setError('Failed to load anime details. Please try again.');
+      console.error('DetailPage - Error:', err); // Debug
+      
+      // Better error messages
+      if (err.response) {
+        if (err.response.status === 404) {
+          setError('Anime not found. Try searching for a different anime.');
+        } else {
+          setError(`Server error (${err.response.status}). Please try again later.`);
+        }
+      } else if (err.request) {
+        setError('Network error. Please check your internet connection.');
+      } else {
+        setError('Failed to load anime details. Please try again.');
+      }
     } finally {
       setLoading(false);
     }
   };
 
   if (loading) return <LoadingSpinner text="Loading anime details..." />;
-  if (error) return <ErrorMessage message={error} onRetry={fetchDetail} />;
+  
+  if (error) return (
+    <div>
+      <button
+        onClick={onBack}
+        className="mb-4 text-gray-400 hover:text-white transition-colors"
+      >
+        ← Back
+      </button>
+      <ErrorMessage 
+        message={error} 
+        onRetry={fetchDetail} 
+      />
+      <div className="mt-6 p-4 bg-yellow-500/10 border border-yellow-500/20 rounded-lg">
+        <p className="text-sm text-yellow-200/80">
+          💡 Tip: Try clicking on anime from the Ongoing or Completed page for better results.
+        </p>
+      </div>
+    </div>
+  );
+  
   if (!detail) return null;
 
   const filteredEpisodes = detail.episode_list?.filter(ep =>
@@ -39,6 +85,9 @@ const DetailPage = ({ slug, onBack, onWatch }) => {
 
   return (
     <div className="animate-fade-in">
+      {/* Rest of the component remains the same... */}
+      {/* (Keep all the existing JSX from the original DetailPage.jsx) */}
+      
       {/* Back Button */}
       <button
         onClick={onBack}
