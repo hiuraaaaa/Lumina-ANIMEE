@@ -2,45 +2,37 @@ import React from 'react';
 import { Play, CheckCircle } from 'lucide-react';
 
 const AnimeCard = ({ anime, onClick }) => {
-  // Extract anime slug from episode title
+  // SIMPLEST approach - just clean the title
   const getAnimeSlug = () => {
-    // If slug is valid anime slug (not generic "anime"), use it
-    if (anime.slug && anime.slug !== 'anime' && !anime.slug.includes('episode')) {
-      return anime.slug;
-    }
-    
-    // Extract anime name from title
-    // Example: "One Piece Episode 1155 Subtitle Indonesia" -> "one-piece"
-    const title = anime.title.toLowerCase();
-    
-    // Remove common patterns
-    const cleanTitle = title
-      .replace(/\s+episode\s+\d+.*$/i, '') // Remove "Episode 123..."
-      .replace(/\s+subtitle\s+indonesia.*$/i, '') // Remove "Subtitle Indonesia"
-      .replace(/\s+–\s+tamat.*$/i, '') // Remove "– TAMAT"
-      .replace(/\s+\[end\].*$/i, '') // Remove "[END]"
-      .replace(/\s+s\d+.*$/i, '') // Remove "S2", "S3", etc
+    // Remove episode number and subtitle indonesia from title
+    let cleanTitle = anime.title
+      .toLowerCase()
+      .replace(/episode\s*\d+/gi, '') // Remove "episode 123"
+      .replace(/ep\s*\d+/gi, '') // Remove "ep 123"
+      .replace(/subtitle indonesia/gi, '') // Remove "subtitle indonesia"
+      .replace(/–\s*tamat/gi, '') // Remove "– tamat"
+      .replace(/\[end\]/gi, '') // Remove "[end]"
+      .replace(/s\d+/gi, '') // Remove "s2", "s3"
+      .replace(/season\s*\d+/gi, '') // Remove "season 2"
       .trim();
     
-    // Convert to slug format
+    // Convert to slug
     const slug = cleanTitle
-      .replace(/[^\w\s-]/g, '') // Remove special chars
-      .replace(/\s+/g, '-') // Replace spaces with -
-      .replace(/-+/g, '-') // Replace multiple - with single -
-      .toLowerCase();
+      .replace(/[^a-z0-9\s-]/g, '') // Remove special chars
+      .replace(/\s+/g, '-') // Spaces to dashes
+      .replace(/-+/g, '-') // Multiple dashes to single
+      .replace(/^-|-$/g, ''); // Remove leading/trailing dashes
+    
+    console.log('Title:', anime.title);
+    console.log('Clean title:', cleanTitle);
+    console.log('Final slug:', slug);
     
     return slug;
   };
 
-  const handleClick = () => {
-    const animeSlug = getAnimeSlug();
-    console.log('Navigating to anime:', animeSlug); // Debug
-    onClick(animeSlug);
-  };
-
   return (
     <div
-      onClick={handleClick}
+      onClick={() => onClick(getAnimeSlug())}
       className="group relative bg-gray-900/50 rounded-xl overflow-hidden cursor-pointer card-glow border border-white/5 hover:border-primary-500/30 transition-all duration-300"
     >
       {/* Poster Image */}
