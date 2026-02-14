@@ -4,11 +4,25 @@ import { API_BASE_URL } from '../config/settings';
 // Create axios instance
 const api = axios.create({
   baseURL: API_BASE_URL,
-  timeout: 10000,
+  timeout: 30000, // Increase timeout to 30s
   headers: {
     'Content-Type': 'application/json',
+    'Accept': 'application/json',
   },
 });
+
+// Add response interceptor for better error handling
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    console.error('API Error:', error);
+    if (error.response) {
+      console.error('Response data:', error.response.data);
+      console.error('Response status:', error.response.status);
+    }
+    return Promise.reject(error);
+  }
+);
 
 // API Service functions
 export const apiService = {
@@ -67,13 +81,20 @@ export const apiService = {
     }
   },
 
-  // Get anime detail
+  // Get anime detail - SIMPLIFIED
   getAnimeDetail: async (slug) => {
     try {
-      const response = await api.get(`/anime/${slug}`);
+      console.log('Fetching anime detail for slug:', slug);
+      const url = `/anime/${slug}`;
+      console.log('Full URL:', API_BASE_URL + url);
+      
+      const response = await api.get(url);
+      console.log('API Response:', response.data);
+      
       return response.data;
     } catch (error) {
       console.error('Error fetching anime detail:', error);
+      console.error('Slug used:', slug);
       throw error;
     }
   },
