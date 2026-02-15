@@ -3,21 +3,21 @@ import { Play, CheckCircle } from 'lucide-react';
 
 const AnimeCard = ({ anime, onClick }) => {
   const getAnimeSlug = () => {
-    // Method 1: Extract from slug
-    if (anime.slug && anime.slug.includes('episode')) {
-      // "one-piece-episode-1155-subtitle-indonesia" → "one-piece"
-      const parts = anime.slug.split('-episode-');
-      if (parts[0]) {
-        console.log('Extracted from slug:', anime.slug, '→', parts[0]);
-        return parts[0];
-      }
+    // Extract anime slug from episode slug
+    // Input: "one-piece-episode-1155-subtitle-indonesia"
+    // Output: "one-piece"
+    
+    if (anime.slug && anime.slug.includes('-episode-')) {
+      const animeSlug = anime.slug.split('-episode-')[0];
+      console.log('Slug extraction:', anime.slug, '→', animeSlug);
+      return animeSlug;
     }
     
-    // Method 2: Extract from title
+    // Fallback: extract from title
     const title = anime.title.toLowerCase();
     const cleanTitle = title
-      .replace(/\s+episode\s+\d+.*/gi, '') // Remove "episode 1155..."
-      .replace(/\s+–.*/gi, '') // Remove "– ..."
+      .replace(/\s+episode\s+\d+.*/gi, '')
+      .replace(/\s+subtitle\s+indonesia.*/gi, '')
       .trim();
     
     const slug = cleanTitle
@@ -26,7 +26,7 @@ const AnimeCard = ({ anime, onClick }) => {
       .replace(/-+/g, '-')
       .replace(/^-|-$/g, '');
     
-    console.log('Extracted from title:', anime.title, '→', slug);
+    console.log('Title extraction:', anime.title, '→', slug);
     return slug;
   };
 
