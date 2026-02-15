@@ -1,6 +1,6 @@
 import { API_BASE_URL } from '../config/settings';
 
-// API Service functions using FETCH (not axios)
+// API Service functions using native fetch
 export const apiService = {
   // Get home/latest anime episodes
   getHome: async (page = 1) => {
@@ -62,7 +62,7 @@ export const apiService = {
     }
   },
 
-  // Get anime detail - USING FETCH LIKE HTML VERSION
+  // Get anime detail
   getAnimeDetail: async (slug) => {
     try {
       const url = `${API_BASE_URL}/anime/${slug}`;
@@ -76,12 +76,10 @@ export const apiService = {
       }
       
       const data = await response.json();
-      console.log('API Response:', data);
-      
+      console.log('Data received successfully');
       return data;
     } catch (error) {
       console.error('Error fetching anime detail:', error);
-      console.error('Slug used:', slug);
       throw error;
     }
   },
