@@ -12,7 +12,7 @@ export default defineConfig({
       output: {
         manualChunks: {
           'react-vendor': ['react', 'react-dom'],
-          'utils': ['axios', 'lucide-react']
+          'utils': ['lucide-react']  // ✅ HAPUS 'axios'
         }
       }
     }
