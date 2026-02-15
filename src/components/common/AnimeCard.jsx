@@ -2,31 +2,31 @@ import React from 'react';
 import { Play, CheckCircle } from 'lucide-react';
 
 const AnimeCard = ({ anime, onClick }) => {
-  // SIMPLEST approach - just clean the title
   const getAnimeSlug = () => {
-    // Remove episode number and subtitle indonesia from title
-    let cleanTitle = anime.title
-      .toLowerCase()
-      .replace(/episode\s*\d+/gi, '') // Remove "episode 123"
-      .replace(/ep\s*\d+/gi, '') // Remove "ep 123"
-      .replace(/subtitle indonesia/gi, '') // Remove "subtitle indonesia"
-      .replace(/–\s*tamat/gi, '') // Remove "– tamat"
-      .replace(/\[end\]/gi, '') // Remove "[end]"
-      .replace(/s\d+/gi, '') // Remove "s2", "s3"
-      .replace(/season\s*\d+/gi, '') // Remove "season 2"
+    // Method 1: Extract from slug
+    if (anime.slug && anime.slug.includes('episode')) {
+      // "one-piece-episode-1155-subtitle-indonesia" → "one-piece"
+      const parts = anime.slug.split('-episode-');
+      if (parts[0]) {
+        console.log('Extracted from slug:', anime.slug, '→', parts[0]);
+        return parts[0];
+      }
+    }
+    
+    // Method 2: Extract from title
+    const title = anime.title.toLowerCase();
+    const cleanTitle = title
+      .replace(/\s+episode\s+\d+.*/gi, '') // Remove "episode 1155..."
+      .replace(/\s+–.*/gi, '') // Remove "– ..."
       .trim();
     
-    // Convert to slug
     const slug = cleanTitle
-      .replace(/[^a-z0-9\s-]/g, '') // Remove special chars
-      .replace(/\s+/g, '-') // Spaces to dashes
-      .replace(/-+/g, '-') // Multiple dashes to single
-      .replace(/^-|-$/g, ''); // Remove leading/trailing dashes
+      .replace(/[^a-z0-9\s-]/g, '')
+      .replace(/\s+/g, '-')
+      .replace(/-+/g, '-')
+      .replace(/^-|-$/g, '');
     
-    console.log('Title:', anime.title);
-    console.log('Clean title:', cleanTitle);
-    console.log('Final slug:', slug);
-    
+    console.log('Extracted from title:', anime.title, '→', slug);
     return slug;
   };
 
@@ -47,17 +47,14 @@ const AnimeCard = ({ anime, onClick }) => {
           }}
         />
         
-        {/* Gradient Overlay */}
         <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent opacity-60 group-hover:opacity-80 transition-opacity"></div>
         
-        {/* Play Icon */}
         <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
           <div className="w-16 h-16 bg-primary-500/90 rounded-full flex items-center justify-center shadow-neon-lg">
             <Play size={28} className="text-white ml-1" fill="white" />
           </div>
         </div>
 
-        {/* Status Badge */}
         {anime.status && (
           <div className="absolute top-3 right-3 z-10">
             <span className="badge badge-success flex items-center space-x-1">
@@ -68,14 +65,11 @@ const AnimeCard = ({ anime, onClick }) => {
         )}
       </div>
 
-      {/* Info */}
       <div className="p-4">
-        {/* Title */}
         <h3 className="font-semibold text-white mb-2 line-clamp-2 group-hover:text-primary-400 transition-colors">
           {anime.title}
         </h3>
 
-        {/* Meta */}
         <div className="flex items-center justify-between text-sm">
           <span className="badge badge-primary">
             {anime.type}
@@ -86,7 +80,6 @@ const AnimeCard = ({ anime, onClick }) => {
         </div>
       </div>
 
-      {/* Hover Border Glow */}
       <div className="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
         <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-primary-500/20 to-secondary-500/20"></div>
       </div>
