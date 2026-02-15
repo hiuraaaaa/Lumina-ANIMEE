@@ -62,7 +62,7 @@ export const apiService = {
     }
   },
 
-  // Get anime detail
+  // Get anime detail - USING FETCH LIKE HTML VERSION
   getAnimeDetail: async (slug) => {
     try {
       const url = `${API_BASE_URL}/anime/${slug}`;
