@@ -1,36 +1,13 @@
-import axios from 'axios';
 import { API_BASE_URL } from '../config/settings';
 
-// Create axios instance
-const api = axios.create({
-  baseURL: API_BASE_URL,
-  timeout: 30000, // Increase timeout to 30s
-  headers: {
-    'Content-Type': 'application/json',
-    'Accept': 'application/json',
-  },
-});
-
-// Add response interceptor for better error handling
-api.interceptors.response.use(
-  (response) => response,
-  (error) => {
-    console.error('API Error:', error);
-    if (error.response) {
-      console.error('Response data:', error.response.data);
-      console.error('Response status:', error.response.status);
-    }
-    return Promise.reject(error);
-  }
-);
-
-// API Service functions
+// API Service functions using FETCH (not axios)
 export const apiService = {
   // Get home/latest anime episodes
   getHome: async (page = 1) => {
     try {
-      const response = await api.get(`/home?page=${page}`);
-      return response.data;
+      const response = await fetch(`${API_BASE_URL}/home?page=${page}`);
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      return await response.json();
     } catch (error) {
       console.error('Error fetching home:', error);
       throw error;
@@ -40,8 +17,9 @@ export const apiService = {
   // Get anime schedule
   getSchedule: async () => {
     try {
-      const response = await api.get('/schedule');
-      return response.data;
+      const response = await fetch(`${API_BASE_URL}/schedule`);
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      return await response.json();
     } catch (error) {
       console.error('Error fetching schedule:', error);
       throw error;
@@ -51,8 +29,9 @@ export const apiService = {
   // Get ongoing anime
   getOngoing: async (page = 1) => {
     try {
-      const response = await api.get(`/ongoing?page=${page}`);
-      return response.data;
+      const response = await fetch(`${API_BASE_URL}/ongoing?page=${page}`);
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      return await response.json();
     } catch (error) {
       console.error('Error fetching ongoing:', error);
       throw error;
@@ -62,8 +41,9 @@ export const apiService = {
   // Get completed anime
   getCompleted: async (page = 1) => {
     try {
-      const response = await api.get(`/completed?page=${page}`);
-      return response.data;
+      const response = await fetch(`${API_BASE_URL}/completed?page=${page}`);
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      return await response.json();
     } catch (error) {
       console.error('Error fetching completed:', error);
       throw error;
@@ -73,25 +53,32 @@ export const apiService = {
   // Search anime
   searchAnime: async (query) => {
     try {
-      const response = await api.get(`/search/${encodeURIComponent(query)}`);
-      return response.data;
+      const response = await fetch(`${API_BASE_URL}/search/${encodeURIComponent(query)}`);
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      return await response.json();
     } catch (error) {
       console.error('Error searching anime:', error);
       throw error;
     }
   },
 
-  // Get anime detail - SIMPLIFIED
+  // Get anime detail - USING FETCH LIKE HTML VERSION
   getAnimeDetail: async (slug) => {
     try {
-      console.log('Fetching anime detail for slug:', slug);
-      const url = `/anime/${slug}`;
-      console.log('Full URL:', API_BASE_URL + url);
+      const url = `${API_BASE_URL}/anime/${slug}`;
+      console.log('Fetching anime detail:', url);
       
-      const response = await api.get(url);
-      console.log('API Response:', response.data);
+      const response = await fetch(url);
+      console.log('Response status:', response.status);
       
-      return response.data;
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      console.log('API Response:', data);
+      
+      return data;
     } catch (error) {
       console.error('Error fetching anime detail:', error);
       console.error('Slug used:', slug);
@@ -102,8 +89,9 @@ export const apiService = {
   // Get episode detail
   getEpisodeDetail: async (slug) => {
     try {
-      const response = await api.get(`/episode/${slug}`);
-      return response.data;
+      const response = await fetch(`${API_BASE_URL}/episode/${slug}`);
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      return await response.json();
     } catch (error) {
       console.error('Error fetching episode:', error);
       throw error;
@@ -111,4 +99,4 @@ export const apiService = {
   },
 };
 
-export default api;
+export default apiService;
